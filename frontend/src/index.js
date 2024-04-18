@@ -12,11 +12,13 @@ import "./Assets/styles/index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import Home from "./Screens/Home";
+import ProductScreen from "./Screens/ProductScreen";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route index={true} path="/" element={<Home />} />
+      <Route path="/product/:id" element={<ProductScreen />} />
     </Route>
   )
 );
