@@ -7,6 +7,7 @@ import Loader from "../Components/Loader";
 import { useRegisterMutation } from "../slices/usersApiSlice";
 import { setCredentials } from "../slices/authSlice";
 import { toast } from "react-toastify";
+import Meta from "../Components/Meta";
 
 const RegisterScreen = () => {
   const [name, setName] = useState("");
@@ -34,7 +35,9 @@ const RegisterScreen = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      toast.error("עימות סיסמא נכשל - הסיסמאות לא זהות");
+      toast.error("עימות סיסמא נכשל - הסיסמאות לא זהות", {
+        toastId: "toastError1",
+      });
       return;
     } else {
       try {
@@ -50,67 +53,70 @@ const RegisterScreen = () => {
   };
 
   return (
-    <FormContainer>
-      <h1 className="mt-5">הרשמה</h1>
+    <>
+      <Meta title={"הרשמה | Jobify"} />
+      <FormContainer>
+        <h1 className="mt-5">הרשמה</h1>
 
-      <Form onSubmit={submitHandler}>
-        <Form.Group controlId="name" className="my-3">
-          <Form.Label>שם מלא</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="הכנס שם מלא"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-        <Form.Group controlId="email" className="my-3">
-          <Form.Label>כתובת דוא"ל</Form.Label>
-          <Form.Control
-            type="email"
-            placeholder={`הכנס דוא"ל`}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-        <Form.Group controlId="password" className="my-3">
-          <Form.Label>סיסמא</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder={`הכנס סיסמא`}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-        <Form.Group controlId="confirmPassword" className="my-3">
-          <Form.Label>עימות סיסמא</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder={`הכנס סיסמא שוב`}
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-        <Button
-          type="submit"
-          variant="primary"
-          className="my-2"
-          disabled={isLoading}
-        >
-          הרשמה לאתר
-        </Button>
+        <Form onSubmit={submitHandler}>
+          <Form.Group controlId="name" className="my-3">
+            <Form.Label>שם מלא</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="הכנס שם מלא"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            ></Form.Control>
+          </Form.Group>
+          <Form.Group controlId="email" className="my-3">
+            <Form.Label>כתובת דוא"ל</Form.Label>
+            <Form.Control
+              type="email"
+              placeholder={`הכנס דוא"ל`}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            ></Form.Control>
+          </Form.Group>
+          <Form.Group controlId="password" className="my-3">
+            <Form.Label>סיסמא</Form.Label>
+            <Form.Control
+              type="password"
+              placeholder={`הכנס סיסמא`}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            ></Form.Control>
+          </Form.Group>
+          <Form.Group controlId="confirmPassword" className="my-3">
+            <Form.Label>עימות סיסמא</Form.Label>
+            <Form.Control
+              type="password"
+              placeholder={`הכנס סיסמא שוב`}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            ></Form.Control>
+          </Form.Group>
+          <Button
+            type="submit"
+            variant="primary"
+            className="my-2"
+            disabled={isLoading}
+          >
+            הרשמה לאתר
+          </Button>
 
-        {isLoading && <Loader />}
-      </Form>
+          {isLoading && <Loader />}
+        </Form>
 
-      <Row>
-        <Col>
-          משתמש קיים?{" "}
-          <Link to={redirect ? `/login?redirect=${redirect}` : "/login"}>
-            <strong>התחבר כאן</strong>
-          </Link>
-        </Col>
-      </Row>
-    </FormContainer>
+        <Row>
+          <Col>
+            משתמש קיים?{" "}
+            <Link to={redirect ? `/login?redirect=${redirect}` : "/login"}>
+              <strong>התחבר כאן</strong>
+            </Link>
+          </Col>
+        </Row>
+      </FormContainer>
+    </>
   );
 };
 export default RegisterScreen;

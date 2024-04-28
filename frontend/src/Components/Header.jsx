@@ -5,6 +5,7 @@ import { LinkContainer } from "react-router-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import { useLogoutMutation } from "../slices/usersApiSlice";
 import { logout } from "../slices/authSlice";
+import SearchBox from "./SearchBox";
 import logo from "../Assets/logo.png";
 
 const Header = () => {
@@ -28,7 +29,7 @@ const Header = () => {
 
   return (
     <header>
-      <Navbar bg="dark" variant="dark" expand="md" collapseOnSelect>
+      <Navbar bg="dark" variant="dark" expand="lg" collapseOnSelect>
         <Container>
           <LinkContainer to="/">
             <Navbar.Brand>
@@ -38,6 +39,11 @@ const Header = () => {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
+              <Nav.Item>
+                <Nav.Link as="div" style={{ maxWidth: "350px" }}>
+                  <SearchBox />
+                </Nav.Link>
+              </Nav.Item>
               <Nav.Item>
                 <LinkContainer to="/cart">
                   <Nav.Link>
@@ -70,6 +76,21 @@ const Header = () => {
                   </LinkContainer>
                 )}
               </Nav.Item>
+              {userInfo && userInfo.isAdmin && (
+                <Nav.Item>
+                  <NavDropdown title="ניהול" id="adminmenu">
+                    <LinkContainer to="/admin/userlist">
+                      <NavDropdown.Item>משתמשים</NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to="/admin/productlist">
+                      <NavDropdown.Item>מוצרים</NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to="/admin/orderlist">
+                      <NavDropdown.Item>הזמנות</NavDropdown.Item>
+                    </LinkContainer>
+                  </NavDropdown>
+                </Nav.Item>
+              )}
             </Nav>
           </Navbar.Collapse>
         </Container>

@@ -7,6 +7,7 @@ import Loader from "../Components/Loader";
 import { useLoginMutation } from "../slices/usersApiSlice";
 import { setCredentials } from "../slices/authSlice";
 import { toast } from "react-toastify";
+import Meta from "../Components/Meta";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
@@ -43,50 +44,55 @@ const LoginScreen = () => {
   };
 
   return (
-    <FormContainer>
-      <h1 className="mt-5">כניסת משתמש</h1>
+    <>
+      <Meta title={"התחברות | Jobify"} />
+      <FormContainer>
+        <h1 className="mt-5">כניסת משתמש</h1>
 
-      <Form onSubmit={submitHandler}>
-        <Form.Group controlId="email" className="my-3">
-          <Form.Label>כתובת דוא"ל</Form.Label>
-          <Form.Control
-            type="email"
-            placeholder={`הכנס דוא"ל`}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-        <Form.Group controlId="password" className="my-3">
-          <Form.Label>סיסמא</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder={`הכנס סיסמא`}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
+        <Form onSubmit={submitHandler}>
+          <Form.Group controlId="email" className="my-3">
+            <Form.Label>כתובת דוא"ל</Form.Label>
+            <Form.Control
+              type="email"
+              placeholder={`הכנס דוא"ל`}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            ></Form.Control>
+          </Form.Group>
+          <Form.Group controlId="password" className="my-3">
+            <Form.Label>סיסמא</Form.Label>
+            <Form.Control
+              type="password"
+              placeholder={`הכנס סיסמא`}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            ></Form.Control>
+          </Form.Group>
 
-        <Button
-          type="submit"
-          variant="primary"
-          className="my-2"
-          disabled={isLoading}
-        >
-          התחבר
-        </Button>
+          <Button
+            type="submit"
+            variant="primary"
+            className="my-2"
+            disabled={isLoading}
+          >
+            התחבר
+          </Button>
 
-        {isLoading && <Loader />}
-      </Form>
+          {isLoading && <Loader />}
+        </Form>
 
-      <Row>
-        <Col>
-          משתמש חדש?{" "}
-          <Link to={redirect ? `/register?redirect=${redirect}` : "/register"}>
-            <strong>הרשם כאן</strong>
-          </Link>
-        </Col>
-      </Row>
-    </FormContainer>
+        <Row>
+          <Col>
+            משתמש חדש?{" "}
+            <Link
+              to={redirect ? `/register?redirect=${redirect}` : "/register"}
+            >
+              <strong>הרשם כאן</strong>
+            </Link>
+          </Col>
+        </Row>
+      </FormContainer>
+    </>
   );
 };
 export default LoginScreen;
