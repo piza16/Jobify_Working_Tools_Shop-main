@@ -13,7 +13,7 @@ const ProductCarousel = () => {
     <Message variant="danger">{error}</Message>
   ) : (
     <>
-      <h1 className="my-4">המוצרים שדורגו הכי גבוה</h1>
+      <h1 className="mb-2">המוצרים שדורגו הכי גבוה</h1>
       <Carousel
         pause="hover"
         className="my-4"
