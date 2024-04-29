@@ -151,7 +151,7 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
 
   if (order) {
     // check the correct amount was paid
-    const paidCorrectAmount = order.totalPrice.toString() === value;
+    const paidCorrectAmount = order.totalPrice === Number(value);
     if (!paidCorrectAmount)
       throw new Error("הסכום ששולם אינו תואם לסכום ההזמנה");
     const d = new Date();
