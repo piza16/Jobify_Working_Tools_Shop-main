@@ -8,53 +8,30 @@ import { verifyPayPalPayment, checkIfNewTransaction } from "../utils/paypal.js";
 // @route   POST /api/orders
 // @access  Private
 const addOrderItems = asyncHandler(async (req, res) => {
-  // const {
-  //   orderItems,
-  //   shippingAddress,
-  //   paymentMethod,
-  //   itemsPrice,
-  //   taxPrice,
-  //   shippingPrice,
-  //   totalPrice,
-  // } = req.body;
-  // if (orderItems && orderItems.length === 0) {
-  //   res.status(400);
-  //   throw new Error("No order items");
-  // } else {
-  //   const order = new Order({
-  //     orderItems: orderItems.map((x) => ({
-  //       ...x,
-  //       product: x._id,
-  //       _id: undefined,
-  //     })),
-  //     user: req.user._id,
-  //     shippingAddress,
-  //     paymentMethod,
-  //     itemsPrice,
-  //     taxPrice,
-  //     shippingPrice,
-  //     totalPrice,
-  //   });
-  //   const createdOrder = await order.save();
-  //   res.status(201).json(createdOrder);
-  // }
-
   const { orderItems, shippingAddress, paymentMethod } = req.body;
 
   if (orderItems && orderItems.length === 0) {
     res.status(400);
     throw new Error("אין פריטים בהזמנה");
   } else {
-    // get the ordered items from our database
+    // Get the ordered items from our database
     const itemsFromDB = await Product.find({
       _id: { $in: orderItems.map((x) => x._id) },
     });
 
-    // map over the order items and use the price from our items from database
+    // Map over the order items and use the price from our items from database
     const dbOrderItems = orderItems.map((itemFromClient) => {
       const matchingItemFromDB = itemsFromDB.find(
         (itemFromDB) => itemFromDB._id.toString() === itemFromClient._id
       );
+
+      if (matchingItemFromDB.countInStock < itemFromClient.qty) {
+        throw new Error(`Not enough stock for ${matchingItemFromDB.name}`);
+      }
+
+      // Update the stock count
+      matchingItemFromDB.countInStock -= itemFromClient.qty;
+
       return {
         ...itemFromClient,
         product: itemFromClient._id,
@@ -63,7 +40,10 @@ const addOrderItems = asyncHandler(async (req, res) => {
       };
     });
 
-    // calculate prices
+    // Save the updated product information
+    await Promise.all(itemsFromDB.map((item) => item.save()));
+
+    // Calculate prices
     const { itemsPrice, taxPrice, shippingPrice, totalPrice } =
       calcPrices(dbOrderItems);
 
@@ -83,6 +63,52 @@ const addOrderItems = asyncHandler(async (req, res) => {
     res.status(201).json(createdOrder);
   }
 });
+
+// const addOrderItems = asyncHandler(async (req, res) => {
+//   const { orderItems, shippingAddress, paymentMethod } = req.body;
+
+//   if (orderItems && orderItems.length === 0) {
+//     res.status(400);
+//     throw new Error("אין פריטים בהזמנה");
+//   } else {
+//     // get the ordered items from our database
+//     const itemsFromDB = await Product.find({
+//       _id: { $in: orderItems.map((x) => x._id) },
+//     });
+
+//     // map over the order items and use the price from our items from database
+//     const dbOrderItems = orderItems.map((itemFromClient) => {
+//       const matchingItemFromDB = itemsFromDB.find(
+//         (itemFromDB) => itemFromDB._id.toString() === itemFromClient._id
+//       );
+//       return {
+//         ...itemFromClient,
+//         product: itemFromClient._id,
+//         price: matchingItemFromDB.price,
+//         _id: undefined,
+//       };
+//     });
+
+//     // calculate prices
+//     const { itemsPrice, taxPrice, shippingPrice, totalPrice } =
+//       calcPrices(dbOrderItems);
+
+//     const order = new Order({
+//       orderItems: dbOrderItems,
+//       user: req.user._id,
+//       shippingAddress,
+//       paymentMethod,
+//       itemsPrice,
+//       taxPrice,
+//       shippingPrice,
+//       totalPrice,
+//     });
+
+//     const createdOrder = await order.save();
+
+//     res.status(201).json(createdOrder);
+//   }
+// });
 
 // @desc    Get logged in user orders
 // @route   GET /api/orders/myorders
@@ -113,30 +139,7 @@ const getOrderById = asyncHandler(async (req, res) => {
 // @route   PUT /api/orders/:id/pay
 // @access  Private
 const updateOrderToPaid = asyncHandler(async (req, res) => {
-  // const order = await Order.findById(req.params.id);
-
-  // if (order) {
-  //   const d = new Date();
-  //   order.isPaid = true;
-  //   order.paidAt =
-  //     d.toLocaleTimeString("he-IL", { timeZone: "Asia/Jerusalem" }) +
-  //     " " +
-  //     d.toLocaleDateString("he-IL", { timeZone: "Asia/Jerusalem" });
-  //   order.paymentResult = {
-  //     id: req.body.id,
-  //     status: req.body.status,
-  //     update_time: req.body.update_time,
-  //     email_address: req.body.payer.email_address,
-  //   };
-
-  //   const updatedOrder = await order.save();
-
-  //   res.status(200).json(updatedOrder);
-  // } else {
-  //   res.status(404);
-  //   throw new Error("Order not found");
-  // }
-
+  // verify the payment
   const { verified, value } = await verifyPayPalPayment(req.body.id);
   if (!verified) throw new Error("התשלום לא עומת בהצלחה");
 
