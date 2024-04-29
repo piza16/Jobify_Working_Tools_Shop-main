@@ -79,7 +79,7 @@ const OrderScreen = () => {
   function onApprove(data, actions) {
     return actions.order.capture().then(async function (details) {
       try {
-        await payOrder({ orderId, details });
+        await payOrder({ orderId, details }).unwrap();
         refetch();
         toast.success("התשלום בוצע בהצלחה", {
           toastId: "toastSuccess1",
@@ -91,14 +91,6 @@ const OrderScreen = () => {
       }
     });
   }
-
-  // async function onApproveTest() {
-  //   await payOrder({ orderId, details: { payer: {} } });
-  //   refetch();
-  //   toast.success("התשלום בוצע בהצלחה", {
-  //     toastId: "toastSuccess1",
-  //   });
-  // }
 
   function onError(err) {
     toast.error(err?.message || err?.data?.message || "שגיאה בתשלום", {
@@ -119,7 +111,7 @@ const OrderScreen = () => {
   return isLoading ? (
     <Loader />
   ) : error ? (
-    <Message variant="danger">{error}</Message>
+    <Message variant="danger">{error?.data?.message || error.error}</Message>
   ) : (
     <>
       <Meta title={"סטטוס הזמנה | Jobify"} />

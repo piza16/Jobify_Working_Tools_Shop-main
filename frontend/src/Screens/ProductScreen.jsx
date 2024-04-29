@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useGetMyOrdersQuery } from "../slices/ordersApiSlice";
 import {
   useGetProductDetailsQuery,
   useCreateReviewMutation,
@@ -13,6 +14,7 @@ import {
   ListGroup,
   Card,
   Button,
+  Container,
 } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import Rating from "../Components/Rating";
@@ -27,10 +29,13 @@ const ProductScreen = () => {
   const [qty, setQty] = useState(1);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
+  const [isPurchased, setIsPurchased] = useState(false);
 
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
+
+  const { data: orders, isLoading: loadingOrders } = useGetMyOrdersQuery();
 
   const {
     data: product,
@@ -43,6 +48,21 @@ const ProductScreen = () => {
     useCreateReviewMutation();
 
   const { userInfo } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    const isUserPurchasedProduct = async () => {
+      if (userInfo && orders) {
+        const purchased = orders.filter((order) =>
+          order.orderItems.find((item) => item.product === productId)
+        );
+        const purchasedAndPaid = purchased.filter((order) => order.isPaid);
+        setIsPurchased(purchasedAndPaid.length > 0);
+      } else {
+        setIsPurchased(false);
+      }
+    };
+    isUserPurchasedProduct();
+  }, [productId, orders, userInfo]);
 
   const addToCartHandler = () => {
     dispatch(addToCart({ ...product, qty }));
@@ -58,11 +78,15 @@ const ProductScreen = () => {
         comment,
       }).unwrap();
       refetch();
-      toast.success("הביקורת נוספה");
+      toast.success("הביקורת נוספה", {
+        toastId: "toastSuccess1",
+      });
       setRating(0);
       setComment("");
     } catch (err) {
-      toast.error(err?.data?.message || err?.error || "שגיאה בהוספת ביקורת");
+      toast.error(err?.data?.message || err?.error || "שגיאה בהוספת ביקורת", {
+        toastId: "toastError1",
+      });
     }
   };
 
@@ -71,7 +95,11 @@ const ProductScreen = () => {
       {isLoading ? (
         <Loader />
       ) : error ? (
-        <Message variant="danger">{error?.data.message || error.error}</Message>
+        <Container style={{ marginTop: "30px" }}>
+          <Message variant="danger">
+            {error?.data.message || error.error}
+          </Message>
+        </Container>
       ) : (
         <>
           <Meta title={product.name} description={product.description} />
@@ -175,8 +203,17 @@ const ProductScreen = () => {
                 ))}
                 <ListGroup.Item>
                   <h2>הוסף ביקורת</h2>
-                  {loadingReview && <Loader />}
-                  {userInfo ? (
+                  {(loadingReview || loadingOrders) && <Loader />}
+                  {!userInfo ? (
+                    <Message>
+                      אנא <Link to="/login">התחבר כאן</Link> ורכוש מוצר זה כדי
+                      להוסיף ביקורת עליו
+                    </Message>
+                  ) : !isPurchased ? (
+                    <Message>
+                      עליך לרכוש מוצר זה על מנת להוסיף ביקורת עליו
+                    </Message>
+                  ) : (
                     <Form onSubmit={createReviewHandler}>
                       <Form.Group controlId="rating">
                         <Form.Label>דרג את המוצר שרכשת</Form.Label>
@@ -210,11 +247,6 @@ const ProductScreen = () => {
                         שלח ביקורת
                       </Button>
                     </Form>
-                  ) : (
-                    <Message>
-                      אנא <Link to="/login">התחבר כאן</Link> כדי לרשום ביקורת על
-                      המוצר
-                    </Message>
                   )}
                 </ListGroup.Item>
               </ListGroup>

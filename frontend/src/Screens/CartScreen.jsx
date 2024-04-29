@@ -99,10 +99,12 @@ const CartScreen = () => {
                 </h3>
                 <h5>
                   מחיר כולל&nbsp; ₪
-                  {cartItems.reduce(
-                    (acc, item) => acc + item.qty * item.price,
-                    0
-                  )}
+                  {Number(
+                    cartItems.reduce(
+                      (acc, item) => acc + item.qty * item.price,
+                      0
+                    )
+                  ).toFixed(2)}
                 </h5>
               </ListGroup.Item>
               <ListGroup.Item>

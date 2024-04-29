@@ -9,9 +9,15 @@ const errorHandler = (err, req, res, next) => {
   let message = err.message;
 
   // Check for mongoose bad ObjectId
-  if (err.name === "CastError" && err.kind === "ObjectId") {
-    message = "Resource not found";
-    statusCode = 404;
+  // if (err.name === "CastError" && err.kind === "ObjectId") {
+  //   message = "Resource not found";
+  //   statusCode = 404;
+  // }
+
+  // Check for MongoDB E11000 duplicate key error
+  if (err.code === 11000 || (err.message && err.message.includes("E11000"))) {
+    message = "האימייל כבר קיים במערכת";
+    statusCode = 400;
   }
 
   res.status(statusCode).json({

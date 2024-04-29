@@ -30,10 +30,14 @@ const ProductListScreen = () => {
     if (window.confirm("האם אתה בטוח שברצונך למחוק מוצר זה?")) {
       try {
         await deleteProduct(id);
-        toast.success("המוצר נמחק");
+        toast.success("המוצר נמחק", {
+          toastId: "toastSuccess1",
+        });
         refetch();
       } catch (err) {
-        toast.error(err?.data?.message || err?.error || "שגיאה במחיקת מוצר");
+        toast.error(err?.data?.message || err?.error || "שגיאה במחיקת מוצר", {
+          toastId: "toastError1",
+        });
       }
     }
   };
@@ -42,11 +46,16 @@ const ProductListScreen = () => {
     if (window.confirm("האם אתה בטוח שברצונך ליצור מוצר חדש?")) {
       try {
         await createProduct();
-        toast.success("מוצר חדש נוצר");
+        toast.success("מוצר חדש נוצר", {
+          toastId: "toastSuccess1",
+        });
         refetch();
       } catch (err) {
         toast.error(
-          err?.data?.message || err?.error || "שגיאה ביצירת מוצר חדש"
+          err?.data?.message || err?.error || "שגיאה ביצירת מוצר חדש",
+          {
+            toastId: "toastError1",
+          }
         );
       }
     }
@@ -70,7 +79,7 @@ const ProductListScreen = () => {
       {isLoading ? (
         <Loader />
       ) : error ? (
-        <Message variant="danger">{error}</Message>
+        <Message variant="danger">{error.data.message}</Message>
       ) : (
         <Card>
           <Table striped bordered hover responsive className="table-sm">

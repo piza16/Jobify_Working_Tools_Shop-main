@@ -66,24 +66,35 @@ const ProductEditScreen = () => {
       toast.error(
         result.error?.data?.message ||
           result.error?.error ||
-          "שגיאה בעדכון מוצר"
+          "שגיאה בעדכון מוצר",
+        {
+          toastId: "toastError2",
+        }
       );
     } else {
-      toast.success("המוצר עודכן בהצלחה");
+      toast.success("המוצר עודכן בהצלחה", {
+        toastId: "toastSuccess2",
+      });
       navigate("/admin/productlist");
     }
   };
 
   const uploadFileHandler = async (e) => {
+    const fileInput = e.target;
     const formData = new FormData();
-    formData.append("image", e.target.files[0]);
+    formData.append("image", fileInput.files[0]);
     try {
       const res = await uploadProductImage(formData).unwrap();
-      toast.success("התמונה הועלתה בהצלחה");
+      toast.success("התמונה הועלתה בהצלחה", {
+        toastId: "toastSuccess1",
+      });
       console.log(res.image);
       setImage(res.image);
     } catch (err) {
-      toast.error(err?.data?.message || err?.error || "שגיאה בהעלאת תמונה");
+      fileInput.value = "";
+      toast.error(err?.data?.message || err?.error || "שגיאה בהעלאת תמונה", {
+        toastId: "toastError1",
+      });
     }
   };
 
@@ -100,7 +111,7 @@ const ProductEditScreen = () => {
         {isLoading ? (
           <Loader />
         ) : error ? (
-          <Message variant="danger">{error}</Message>
+          <Message variant="danger">{error.data.message}</Message>
         ) : (
           <>
             <Form onSubmit={updateProductHandler}>

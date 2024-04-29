@@ -20,9 +20,13 @@ const UserListScreen = () => {
       try {
         await deleteUser(id);
         refetch();
-        toast.success("המשתמש נמחק");
+        toast.success("המשתמש נמחק", {
+          toastId: "toastSuccess1",
+        });
       } catch (err) {
-        toast.error(err?.data?.message || err?.error || "שגיאה במחיקת משתמש");
+        toast.error(err?.data?.message || err?.error || "שגיאה במחיקת משתמש", {
+          toastId: "toastError1",
+        });
       }
     }
   };

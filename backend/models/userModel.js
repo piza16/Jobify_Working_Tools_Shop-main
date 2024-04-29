@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import validator from "validator";
 
 const userSchema = new mongoose.Schema(
   {
@@ -11,10 +12,29 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
+      validate: {
+        validator: validator.isEmail,
+        message: "Please enter a valid email",
+      },
     },
     password: {
       type: String,
       required: true,
+      minlength: [8, "הסיסמא חייבת להיות באורך של לפחות 8 תווים"],
+      validate: {
+        validator: function (value) {
+          // Ensures the password contains at least one number and one uppercase letter
+          return validator.isStrongPassword(value, {
+            minLength: 8,
+            minLowercase: 1,
+            minUppercase: 1,
+            minNumbers: 1,
+            minSymbols: 0,
+          });
+        },
+        message:
+          "הסיסמא חייבת להכיל תווים באנגלית, לפחות אות גדולה אחת, אות אחת קטנה וספרה אחת",
+      },
     },
     isAdmin: {
       type: Boolean,

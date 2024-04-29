@@ -41,12 +41,16 @@ const UserEditScreen = () => {
     e.preventDefault();
     try {
       const res = await updateUser({ userId, name, email, isAdmin });
-      console.log(res);
-      toast.success("המשתמש עודכן בהצלחה");
+      if (res.error) throw res.error;
+      toast.success("המשתמש עודכן בהצלחה", {
+        toastId: "toastSuccess1",
+      });
       refetch();
       navigate("/admin/userlist");
     } catch (err) {
-      toast.error(err?.data?.message || err?.error || "שגיאה בעדכון משתמש");
+      toast.error(err?.data?.message || err?.error || "שגיאה בעדכון משתמש", {
+        toastId: "toastError1",
+      });
     }
   };
 

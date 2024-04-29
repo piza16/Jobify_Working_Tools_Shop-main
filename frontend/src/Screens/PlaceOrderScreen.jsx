@@ -97,7 +97,6 @@ const PlaceOrderScreen = () => {
                         </Col>
                         <Col md={4}>
                           ₪{item.price}x{item.qty} = ₪{item.qty * item.price}
-                          {item.qty}
                         </Col>
                       </Row>
                     </ListGroup.Item>
@@ -138,7 +137,9 @@ const PlaceOrderScreen = () => {
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
-                {error && <Message variant="danger">{error}</Message>}
+                {error && (
+                  <Message variant="danger">{error.data.message}</Message>
+                )}
               </ListGroup.Item>
               <ListGroup.Item>
                 <Button

@@ -28,7 +28,7 @@ const App = () => {
         onCanPlay={setPlayBack}
       />
       <Header />
-      <main className="py-3">
+      <main className="pb-3 pt-5">
         <Container>
           <Outlet />
         </Container>
